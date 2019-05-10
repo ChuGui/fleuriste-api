@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -30,10 +31,7 @@ class Article
      */
     private $content;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $image;
+
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="articles")
@@ -56,10 +54,20 @@ class Article
      */
     private $products;
 
+    /**
+     * @var MediaObject|null
+     *
+     * @ORM\ManyToMany(targetEntity="App\Entity\MediaObject")
+     * @ApiProperty(iri="http://schema.org/image")
+     */
+    private $images;
+
     public function __construct()
     {
         $this->tags = new ArrayCollection();
         $this->products = new ArrayCollection();
+        $this->images = new ArrayCollection();
+        $this->created_at = new \DateTime('now');
     }
 
     public function getId(): ?int
@@ -91,17 +99,6 @@ class Article
         return $this;
     }
 
-    public function getImage(): ?string
-    {
-        return $this->image;
-    }
-
-    public function setImage(?string $image): self
-    {
-        $this->image = $image;
-
-        return $this;
-    }
 
     public function getAuthor(): ?User
     {
@@ -178,6 +175,32 @@ class Article
         if ($this->products->contains($product)) {
             $this->products->removeElement($product);
             $product->removeArticle($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MediaObject[]
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImages(MediaObject $images): self
+    {
+        if (!$this->images->contains($images)) {
+            $this->images[] = $images;
+        }
+
+        return $this;
+    }
+
+    public function removeImages(MediaObject $images): self
+    {
+        if ($this->images->contains($images)) {
+            $this->images->removeElement($images);
         }
 
         return $this;
