@@ -31,8 +31,6 @@ class Article
      */
     private $content;
 
-
-
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="articles")
      * @ORM\JoinColumn(nullable=false)
@@ -40,7 +38,7 @@ class Article
     private $author;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $created_at;
 
@@ -55,19 +53,17 @@ class Article
     private $products;
 
     /**
-     * @var MediaObject|null
-     *
-     * @ORM\ManyToMany(targetEntity="App\Entity\MediaObject")
-     * @ApiProperty(iri="http://schema.org/image")
+     * @ORM\OneToMany(targetEntity="App\Entity\Image", mappedBy="article")
      */
     private $images;
+
 
     public function __construct()
     {
         $this->tags = new ArrayCollection();
         $this->products = new ArrayCollection();
-        $this->images = new ArrayCollection();
         $this->created_at = new \DateTime('now');
+        $this->images = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -181,28 +177,34 @@ class Article
     }
 
     /**
-     * @return Collection|MediaObject[]
+     * @return Collection|Image[]
      */
     public function getImages(): Collection
     {
         return $this->images;
     }
 
-    public function addImages(MediaObject $images): self
+    public function addImage(Image $image): self
     {
-        if (!$this->images->contains($images)) {
-            $this->images[] = $images;
+        if (!$this->images->contains($image)) {
+            $this->images[] = $image;
+            $image->setArticle($this);
         }
 
         return $this;
     }
 
-    public function removeImages(MediaObject $images): self
+    public function removeImage(Image $image): self
     {
-        if ($this->images->contains($images)) {
-            $this->images->removeElement($images);
+        if ($this->images->contains($image)) {
+            $this->images->removeElement($image);
+            // set the owning side to null (unless already changed)
+            if ($image->getArticle() === $this) {
+                $image->setArticle(null);
+            }
         }
 
         return $this;
     }
+
 }

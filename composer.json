@@ -11,8 +11,7 @@
         "symfony/dotenv": "4.2.*",
         "symfony/flex": "^1.1",
         "symfony/framework-bundle": "4.2.*",
-        "symfony/yaml": "4.2.*",
-        "vich/uploader-bundle": "^1.8"
+        "symfony/yaml": "4.2.*"
     },
     "config": {
         "preferred-install": {
