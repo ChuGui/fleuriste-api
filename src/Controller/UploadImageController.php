@@ -3,7 +3,10 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class UploadImageController extends AbstractController
@@ -17,14 +20,17 @@ class UploadImageController extends AbstractController
      */
     public function index(Request $request)
     {
-        try {
-            $file = $request->files->get('image');
-            dump($request);
-            dump($request->request->all());
-            dump($file);
-            die;
-        } catch (\Exception $e) {
 
+        dump($request instanceof Request);
+        $contentType = $request->server->getHeaders()['CONTENT_TYPE'];
+        if(preg_match('/multipart\/form-data/', $contentType) == 0){
+            $response = new JsonResponse('Error: Format attendu : multipart/form-data',Response::HTTP_BAD_REQUEST);
+            return $response;
+        };
+        try {
+            $dsqf6->getMLKJ();
+        } catch (\Exception $e) {
+            return new JsonResponse($e->getMessage(), 500);
         }
     }
 }
